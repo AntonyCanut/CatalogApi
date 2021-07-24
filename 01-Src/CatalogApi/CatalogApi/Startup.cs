@@ -1,3 +1,6 @@
+using Autofac;
+using CatalogApi.Interfaces;
+using CatalogApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -54,6 +57,12 @@ namespace CatalogApi
             {
                 endpoints.MapControllers();
             });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterType<DatabaseService>().As<IDatabaseService>().InstancePerDependency();
+            builder.RegisterType<ProductsService>().As<IProductsService>().InstancePerDependency();
         }
     }
 }

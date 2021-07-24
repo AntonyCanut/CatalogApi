@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace CatalogApiTests
 {
-    public class Tests
+    public class ProductsServiceTests
     {
         [SetUp]
         public void Setup()
