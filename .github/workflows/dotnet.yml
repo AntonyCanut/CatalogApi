@@ -43,7 +43,7 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"AntonyCanut_CatalogApi" /o:"antonycanut" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet restore
-          dotnet build --no-restore
-          dotnet test --no-build --verbosity normal
+          dotnet restore ./01-Src/CatalogApi
+          dotnet build ./01-Src/CatalogApi --no-restore
+          dotnet test ./01-Src/CatalogApi --no-build --verbosity normal
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
