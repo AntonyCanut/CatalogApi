@@ -9,11 +9,11 @@ namespace CatalogApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        private readonly ILogger<ProductController> _logger;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductController(ILogger<ProductController> logger)
+        public ProductsController(ILogger<ProductsController> logger)
         {
             _logger = logger;
         }
