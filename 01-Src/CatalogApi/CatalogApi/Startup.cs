@@ -1,5 +1,6 @@
 using Autofac;
 using CatalogApi.Interfaces;
+using CatalogApi.Models;
 using CatalogApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +30,6 @@ namespace CatalogApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -61,7 +61,7 @@ namespace CatalogApi
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterType<DatabaseService>().As<IDatabaseService>().InstancePerDependency();
+            builder.RegisterType<DatabaseService<Product>>().As<IDatabaseService<Product>>().InstancePerDependency();
             builder.RegisterType<ProductsService>().As<IProductsService>().InstancePerDependency();
         }
     }
