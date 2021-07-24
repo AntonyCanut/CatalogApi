@@ -593,3 +593,5 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,visualstudio,visualstudiocode,git
 01-Src/CatalogApi/CatalogApi/appsettings.json
+
+01-Src/CatalogApi/CatalogApi/temp/CatalogApi/internal_logs/

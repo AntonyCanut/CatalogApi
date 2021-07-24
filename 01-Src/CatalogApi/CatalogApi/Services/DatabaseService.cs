@@ -14,11 +14,14 @@ namespace CatalogApi.Services
     public class DatabaseService<T> : IDatabaseService<T>
     {
         private readonly IConfiguration _configuration;
+        private readonly ILoggerService _logger;
 
-        public DatabaseService(IConfiguration configuration)
+        public DatabaseService(ILoggerService logger, IConfiguration configuration)
         {
             _configuration = configuration;
+            _logger = logger;
         }
+
         public IEnumerable<T> RequestDatabase(string nameStoreProcedure)
         {
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("SqlConnection")))
@@ -37,9 +40,8 @@ namespace CatalogApi.Services
                 }
                 catch (SqlException ex)
                 {
-                    //to log
-                    //ex.Errors[0].Message
-                    throw new Exception();
+                    _logger.LogError(ex.Message);
+                    throw new Exception("Error SQL SERVER");
                 }
             }
         }

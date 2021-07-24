@@ -11,8 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +24,7 @@ namespace CatalogApi
     {
         public Startup(IConfiguration configuration)
         {
+            LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "\\Properties", "\\nlog.config"));
             Configuration = configuration;
         }
 
@@ -61,8 +64,9 @@ namespace CatalogApi
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterType<DatabaseService<Product>>().As<IDatabaseService<Product>>().InstancePerDependency();
-            builder.RegisterType<ProductsService>().As<IProductsService>().InstancePerDependency();
+            builder.RegisterType<DatabaseService<Product>>().As<IDatabaseService<Product>>().SingleInstance();
+            builder.RegisterType<ProductsService>().As<IProductsService>().SingleInstance();
+            builder.RegisterType<LoggerService>().As<ILoggerService>().SingleInstance();
         }
     }
 }

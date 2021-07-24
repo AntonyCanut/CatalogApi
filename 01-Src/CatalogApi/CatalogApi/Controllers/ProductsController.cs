@@ -17,10 +17,10 @@ namespace CatalogApi.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ILogger<ProductsController> _logger;
+        private readonly ILoggerService _logger;
         private readonly IProductsService _productsService;
 
-        public ProductsController(ILogger<ProductsController> logger, IProductsService productsService)
+        public ProductsController(ILoggerService logger, IProductsService productsService)
         {
             _logger = logger;
             _productsService = productsService;
@@ -47,6 +47,8 @@ namespace CatalogApi.Controllers
             }
             catch (ProductException ex)
             {
+                _logger.LogError($"{ex.Message} with the following product : \nCode: {product.Code}, {product.Name}," +
+                    $"{product.StartDate}, {product.EndDate}");
                 return new HttpResponseMessage(HttpStatusCode.Conflict)
                 {
                     Content = new StringContent(ex.Message),
@@ -54,6 +56,8 @@ namespace CatalogApi.Controllers
                 };
             }
 
+            _logger.LogError($"Unknow error with the following product : \nCode: {product.Code}, {product.Name}," +
+                    $"{product.StartDate}, {product.EndDate}");
             return new HttpResponseMessage(HttpStatusCode.NotAcceptable)
             {
                 Content = new StringContent(string.Format("Unknow problem with product with Code = {0}", product.Code)),
