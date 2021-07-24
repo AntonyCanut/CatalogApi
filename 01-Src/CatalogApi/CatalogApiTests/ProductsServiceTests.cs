@@ -1,78 +1,124 @@
+using CatalogApi.Exceptions;
+using CatalogApi.Interfaces;
+using CatalogApi.Models;
+using CatalogApi.Services;
+using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CatalogApiTests
 {
     public class ProductsServiceTests
     {
+        private IDatabaseService<Product> _databaseService;
+        private IProductsService _productsService;
+
         [SetUp]
         public void Setup()
         {
+            _databaseService = Mock.Of<IDatabaseService<Product>>();
+            _productsService = new ProductsService(_databaseService);
         }
 
         [Test]
         public void Should_Return_Empty_Table_When_Empty_From_Products_Services()
         {
-            Assert.Fail();
+            Assert.AreEqual(_productsService.GetAllProducts().Count(), 0);
         }
 
         [Test]
         public void Should_Return_A_Data_When_Database_Contains_Only_One_Value()
         {
-            Assert.Fail();
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetAllProducts.ToString())).Returns(new List<Product>()
+            {
+                new Product()
+            });
+            Assert.AreEqual(_productsService.GetAllProducts().Count(), 1);
         }
 
         [Test]
         public void Should_Return_Multiple_Data_When_The_Database_Contains_Multiple_Values()
         {
-            Assert.Fail();
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetAllProducts.ToString())).Returns(new List<Product>()
+            {
+                new Product(),
+                new Product(),
+                new Product()
+            });
+            Assert.AreEqual(_productsService.GetAllProducts().Count(), 3);
         }
 
         [Test]
         public void Should_Be_Able_To_Add_Data_To_The_Database()
         {
-            Assert.Fail();
+            var product = new Product()
+            {
+                Code = "UT01",
+                Name = "Unit Test 01",
+                StartDate = System.DateTime.Now,
+                EndDate = System.DateTime.Now.AddDays(5)
+            };
+            Assert.IsTrue(_productsService.InsertProduct(product));
         }
 
         [Test]
         public void Shouldnt_Be_Able_To_Add_Data_To_The_Database_Without_Code()
         {
-            Assert.Fail();
+            var product = new Product()
+            {
+                Code = "",
+                Name = "Unit Test 01",
+                StartDate = System.DateTime.Now,
+                EndDate = System.DateTime.Now.AddDays(5)
+            };
+            Assert.Throws<ProductException>(() => _productsService.InsertProduct(product));
         }
 
         [Test]
         public void Shouldnt_Be_Able_To_Add_Data_To_The_Database_Without_Name()
         {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void Shouldnt_Be_Able_To_Add_Data_To_The_Database_Without_StartDate()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void Shouldnt_Be_Able_To_Add_Data_To_The_Database_Without_EndDate()
-        {
-            Assert.Fail();
+            var product = new Product()
+            {
+                Code = "UT01",
+                Name = "",
+                StartDate = System.DateTime.Now,
+                EndDate = System.DateTime.Now.AddDays(5)
+            };
+            Assert.Throws<ProductException>(() => _productsService.InsertProduct(product));
         }
 
         [Test]
         public void Shouldnt_Be_Able_To_Add_Multiple_Data_With_The_Same_Code()
         {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void Should_Be_Able_To_Add_Multiple_Data_Different_Codes()
-        {
-            Assert.Fail();
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetProduct.ToString())).Returns(new List<Product>()
+            {
+                new Product()
+                {
+                    Code = "UT01"
+                }
+            });
+            var product = new Product()
+            {
+                Code = "UT01",
+                Name = "",
+                StartDate = System.DateTime.Now,
+                EndDate = System.DateTime.Now.AddDays(5)
+            };
+            Assert.Throws<ProductException>(() => _productsService.InsertProduct(product));
         }
 
         [Test]
         public void Shouldnt_Be_Able_To_Add_Data_With_EndDate_Before_StartDate()
         {
-            Assert.Fail();
+            var product = new Product()
+            {
+                Code = "UT01",
+                Name = "",
+                StartDate = System.DateTime.Now,
+                EndDate = System.DateTime.Now.AddDays(-5)
+            };
+            Assert.Throws<ProductException>(() => _productsService.InsertProduct(product));
         }
     }
 }

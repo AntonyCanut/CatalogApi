@@ -31,7 +31,16 @@ namespace CatalogApi.Services
         {
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("SqlConnection")))
             {
-                return connection.Query<T>(nameStoreProcedure, element, commandType: CommandType.StoredProcedure);
+                try
+                {
+                    return connection.Query<T>(nameStoreProcedure, element, commandType: CommandType.StoredProcedure);
+                }
+                catch (SqlException ex)
+                {
+                    //to log
+                    //ex.Errors[0].Message
+                    throw new Exception();
+                }
             }
         }
     }

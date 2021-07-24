@@ -1,4 +1,5 @@
-﻿using CatalogApi.Interfaces;
+﻿using CatalogApi.Exceptions;
+using CatalogApi.Interfaces;
 using CatalogApi.Models;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,15 @@ namespace CatalogApi.Services
 
         public bool InsertProduct(Product product)
         {
+            if (string.IsNullOrEmpty(product.Code) || string.IsNullOrEmpty(product.Name))
+                throw new ProductException(ProductErrorEnum.SomethingIsNull, product);
+
+            if (product.StartDate.CompareTo(product.EndDate) >= 0)
+                throw new ProductException(ProductErrorEnum.StartDateMustBeforeEndDate, product);
+
+            if (_databaseService.RequestDatabase(ProductEnum.GetProduct.ToString(), product).Count() > 0)
+                throw new ProductException(ProductErrorEnum.CodeNoUnique, product);
+
             _databaseService.RequestDatabase(ProductEnum.insertProduct.ToString(), product);
             return true;
         }

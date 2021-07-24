@@ -1,6 +1,8 @@
-﻿using CatalogApi.Interfaces;
+﻿using CatalogApi.Exceptions;
+using CatalogApi.Interfaces;
 using CatalogApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -33,11 +35,22 @@ namespace CatalogApi.Controllers
         [HttpPost]
         public HttpResponseMessage Insert(Product product)
         {
-            if (_productsService.InsertProduct(product))
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.Created)
+                if (_productsService.InsertProduct(product))
                 {
-                    Content = new StringContent(string.Format("product with Code = {0} created", product.Code))
+                    return new HttpResponseMessage(HttpStatusCode.Created)
+                    {
+                        Content = new StringContent(string.Format("product with Code = {0} created", product.Code))
+                    };
+                }
+            }
+            catch (ProductException ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.Conflict)
+                {
+                    Content = new StringContent(ex.Message),
+                    ReasonPhrase = ex.Message
                 };
             }
 
