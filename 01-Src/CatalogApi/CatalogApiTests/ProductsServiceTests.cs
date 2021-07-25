@@ -24,29 +24,29 @@ namespace CatalogApiTests
         [Test]
         public void Should_Return_Empty_Table_When_Empty_From_Products_Services()
         {
-            Assert.AreEqual(_productsService.GetAllProducts().Count(), 0);
+            Assert.AreEqual(0, _productsService.GetAllProducts().Count());
         }
 
         [Test]
         public void Should_Return_A_Data_When_Database_Contains_Only_One_Value()
         {
-            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetAllProducts.ToString())).Returns(new List<Product>()
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductRequest.GetAllProducts.ToString())).Returns(new List<Product>()
             {
                 new Product()
             });
-            Assert.AreEqual(_productsService.GetAllProducts().Count(), 1);
+            Assert.AreEqual(1, _productsService.GetAllProducts().Count());
         }
 
         [Test]
         public void Should_Return_Multiple_Data_When_The_Database_Contains_Multiple_Values()
         {
-            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetAllProducts.ToString())).Returns(new List<Product>()
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductRequest.GetAllProducts.ToString())).Returns(new List<Product>()
             {
                 new Product(),
                 new Product(),
                 new Product()
             });
-            Assert.AreEqual(_productsService.GetAllProducts().Count(), 3);
+            Assert.AreEqual(3, _productsService.GetAllProducts().Count());
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace CatalogApiTests
         [Test]
         public void Shouldnt_Be_Able_To_Add_Multiple_Data_With_The_Same_Code()
         {
-            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductEnum.GetProduct.ToString())).Returns(new List<Product>()
+            Mock.Get(_databaseService).Setup(m => m.RequestDatabase(ProductRequest.GetProduct.ToString())).Returns(new List<Product>()
             {
                 new Product()
                 {

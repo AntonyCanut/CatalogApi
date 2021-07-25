@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using CatalogApi.Exceptions;
 
 namespace CatalogApi.Services
 {
     public class DatabaseService<T> : IDatabaseService<T>
     {
         private readonly IConfiguration _configuration;
-        private readonly ILoggerService _logger;
 
-        public DatabaseService(ILoggerService logger, IConfiguration configuration)
+        public DatabaseService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _logger = logger;
         }
 
         public IEnumerable<T> RequestDatabase(string nameStoreProcedure)
@@ -34,15 +33,7 @@ namespace CatalogApi.Services
         {
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("SqlConnection")))
             {
-                try
-                {
-                    return connection.Query<T>(nameStoreProcedure, element, commandType: CommandType.StoredProcedure);
-                }
-                catch (SqlException ex)
-                {
-                    _logger.LogError(ex.Message);
-                    throw new Exception("Error SQL SERVER");
-                }
+                return connection.Query<T>(nameStoreProcedure, element, commandType: CommandType.StoredProcedure);
             }
         }
     }

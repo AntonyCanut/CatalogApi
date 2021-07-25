@@ -1,6 +1,7 @@
 ﻿using CatalogApi.Exceptions;
 using CatalogApi.Interfaces;
 using CatalogApi.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CatalogApi.Services
 {
-    public enum ProductEnum { GetAllProducts, GetProduct, insertProduct }
+    public enum ProductRequest { GetAllProducts, GetProduct, insertProduct }
 
     public class ProductsService : IProductsService
     {
@@ -21,21 +22,28 @@ namespace CatalogApi.Services
 
         public IEnumerable<Product> GetAllProducts()
         {
-            return _databaseService.RequestDatabase(ProductEnum.GetAllProducts.ToString()) as IEnumerable<Product>;
+            return _databaseService.RequestDatabase(ProductRequest.GetAllProducts.ToString());
         }
 
         public bool InsertProduct(Product product)
         {
             if (string.IsNullOrEmpty(product.Code) || string.IsNullOrEmpty(product.Name))
-                throw new ProductException(ProductErrorEnum.SomethingIsNull, product);
+                throw new ProductException(ProductErrorType.SomethingIsNull, product);
 
             if (product.StartDate.CompareTo(product.EndDate) >= 0)
-                throw new ProductException(ProductErrorEnum.StartDateMustBeforeEndDate, product);
+                throw new ProductException(ProductErrorType.StartDateMustBeforeEndDate, product);
 
-            if (_databaseService.RequestDatabase(ProductEnum.GetProduct.ToString(), product).Count() > 0)
-                throw new ProductException(ProductErrorEnum.CodeNoUnique, product);
+            if (_databaseService.RequestDatabase(ProductRequest.GetProduct.ToString(), product).Any())
+                throw new ProductException(ProductErrorType.CodeNoUnique, product);
 
-            _databaseService.RequestDatabase(ProductEnum.insertProduct.ToString(), product);
+            try
+            {
+                _databaseService.RequestDatabase(ProductRequest.insertProduct.ToString(), product);
+            }
+            catch (SqlException ex)
+            {
+                throw new ProductException(ProductErrorType.SQLServer, product, ex.StackTrace);
+            }
             return true;
         }
     }

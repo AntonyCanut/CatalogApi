@@ -48,7 +48,8 @@ namespace CatalogApi.Controllers
             catch (ProductException ex)
             {
                 _logger.LogError($"{ex.Message} with the following product : \nCode: {product.Code}, {product.Name}," +
-                    $"{product.StartDate}, {product.EndDate}");
+                    $"{product.StartDate}, {product.EndDate} \n{ex.StackTrace}");
+
                 return new HttpResponseMessage(HttpStatusCode.Conflict)
                 {
                     Content = new StringContent(ex.Message),
